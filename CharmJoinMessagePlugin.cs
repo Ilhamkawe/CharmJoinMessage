@@ -2,11 +2,11 @@ using System;
 using Rocket.API.Collections;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
-using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
 using Logger = Rocket.Core.Logging.Logger;
+using Steamworks;
 
 namespace CharmJoinMessage
 {
@@ -37,8 +37,9 @@ namespace CharmJoinMessage
             { "welcome_title_end", "╚═══════════════════════════════════╝" }
         };
 
-        private void OnPlayerConnected(SteamPlayer steamPlayer)
+        private void OnPlayerConnected(CSteamID steamId)
         {
+            var steamPlayer = PlayerTool.getSteamPlayer(steamId);
             if (steamPlayer == null)
                 return;
 
