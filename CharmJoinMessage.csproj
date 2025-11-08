@@ -10,15 +10,15 @@
 
   <ItemGroup>
     <Reference Include="Rocket.API">
-      <HintPath>../RocketRadiationStorm/Modules/Rocket.Unturned/Rocket.API.dll</HintPath>
+      <HintPath>Modules/Rocket.Unturned/Rocket.API.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Rocket.Core">
-      <HintPath>../RocketRadiationStorm/Modules/Rocket.Unturned/Rocket.Core.dll</HintPath>
+      <HintPath>Modules/Rocket.Unturned/Rocket.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Rocket.Unturned">
-      <HintPath>../RocketRadiationStorm/Modules/Rocket.Unturned/Rocket.Unturned.dll</HintPath>
+      <HintPath>Modules/Rocket.Unturned/Rocket.Unturned.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -26,7 +26,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>../RocketRadiationStorm/lib/Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>../RocketRadiationStorm/Rocket.Unturned-master/lib/Assembly-CSharp-firstpass.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="com.rlabrecque.steamworks.net">
