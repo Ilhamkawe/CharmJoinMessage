@@ -17,13 +17,13 @@ namespace CharmJoinMessage
         protected override void Load()
         {
             Instance = this;
-            UnturnedPlayerEvents.OnPlayerConnected += OnPlayerConnected;
+            Provider.onServerConnected += OnPlayerConnected;
             Logger.Log("[CharmJoinMessage] Plugin loaded successfully!");
         }
 
         protected override void Unload()
         {
-            UnturnedPlayerEvents.OnPlayerConnected -= OnPlayerConnected;
+            Provider.onServerConnected -= OnPlayerConnected;
             Logger.Log("[CharmJoinMessage] Plugin unloaded.");
             Instance = null;
         }
@@ -37,8 +37,12 @@ namespace CharmJoinMessage
             { "welcome_title_end", "╚═══════════════════════════════════╝" }
         };
 
-        private void OnPlayerConnected(UnturnedPlayer player)
+        private void OnPlayerConnected(SteamPlayer steamPlayer)
         {
+            if (steamPlayer == null)
+                return;
+
+            var player = UnturnedPlayer.FromSteamPlayer(steamPlayer);
             if (player == null)
                 return;
 
