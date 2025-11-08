@@ -1,67 +1,34 @@
 # Status Dependencies CharmJoinMessage
 
-## ✅ Yang Sudah Ada
+## ✅ Sudah Siap
 
-### 1. Rocket.Unturned DLLs (di dalam CharmJoinMessage)
-- ✅ `Modules/Rocket.Unturned/Rocket.API.dll`
-- ✅ `Modules/Rocket.Unturned/Rocket.Core.dll`
-- ✅ `Modules/Rocket.Unturned/Rocket.Unturned.dll`
+- `Modules/Rocket.Unturned/` → berisi `Rocket.API/Core/Unturned.dll`
+- `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/` → berisi `Assembly-CSharp.dll`, `com.rlabrecque.steamworks.net.dll`, dll
+- `UnityEngine.*` → otomatis disediakan lewat NuGet package `RocketModFix.UnityEngine.Redist`
 
-### 2. Unturned DLLs (di dalam CharmJoinMessage)
-- ✅ `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/Assembly-CSharp.dll`
-- ✅ `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/com.rlabrecque.steamworks.net.dll`
+## ❌ Tidak Lagi Diperlukan
 
-### 3. Unity DLLs (di parent folder RocketRadiationStorm/lib)
-- ✅ `../RocketRadiationStorm/lib/UnityEngine.CoreModule.dll`
-- ✅ `../RocketRadiationStorm/lib/UnityEngine.dll`
+- Folder `../RocketRadiationStorm/lib/` dengan `UnityEngine.dll`
+- File manual `Assembly-CSharp-firstpass.dll` di luar project
 
-## ⚠️ Yang Perlu Diperbaiki
+## ✅ Langkah Build
 
-### Assembly-CSharp-firstpass.dll
-- **Lokasi saat ini:** `../RocketRadiationStorm/Rocket.Unturned-master/lib/Assembly-CSharp-firstpass.dll`
-- **Lokasi yang diharapkan:** `../RocketRadiationStorm/lib/Assembly-CSharp-firstpass.dll`
-- **Solusi:** Copy file dari `Rocket.Unturned-master/lib/` ke `lib/`
-
-**Cara fix:**
 ```powershell
-# Dari folder CharmJoinMessage
-Copy-Item "..\RocketRadiationStorm\Rocket.Unturned-master\lib\Assembly-CSharp-firstpass.dll" "..\RocketRadiationStorm\lib\Assembly-CSharp-firstpass.dll"
+# Restore (opsional, msbuild /t:Restore juga oke)
+.\nuget.exe restore CharmJoinMessage.csproj
+
+# Build (gunakan path MSBuild yang tersedia di environment kamu)
+"C:\Path\To\MSBuild.exe" CharmJoinMessage.csproj /t:Restore,Build /p:Configuration=Release
 ```
 
-Atau jalankan script:
+Atau jalankan:
 ```powershell
-.\verify-dependencies.ps1
+.\build.ps1
 ```
 
-## 📋 Checklist Final
+## 📦 Output
 
-Setelah semua file ada, struktur harus seperti ini:
+Setelah sukses, plugin berada di `bin\Release\CharmJoinMessage.dll`.
 
-```
-CharmJoinMessage/
-├── Modules/
-│   └── Rocket.Unturned/
-│       ├── Rocket.API.dll          ✅
-│       ├── Rocket.Core.dll         ✅
-│       └── Rocket.Unturned.dll     ✅
-│
-└── ../RocketRadiationStorm/
-    └── lib/
-        ├── Assembly-CSharp-firstpass.dll  ⚠️ PERLU COPY
-        ├── UnityEngine.CoreModule.dll     ✅
-        └── UnityEngine.dll                ✅
-```
-
-## 🧪 Test Build
-
-Setelah semua file ada, test build:
-```powershell
-.\build.bat
-```
-
-Jika berhasil, akan muncul:
-```
-BUILD SUCCESSFUL!
-Output: bin\Release\CharmJoinMessage.dll
-```
+Semua dependency kritikal sekarang tersentral di NuGet cache sehingga CI/CD maupun build lokal tinggal restore + build saja. 🎉
 

@@ -1,83 +1,44 @@
-# Setup Dependencies untuk GitHub Actions
+# Setup Dependencies untuk CharmJoinMessage
 
-File ini menjelaskan cara setup dependencies untuk build di GitHub Actions.
+## 🎯 Tujuan
+Sejak commit ini, project sudah memakai NuGet package `RocketModFix.UnityEngine.Redist` supaya `UnityEngine.dll` dan modul turunannya otomatis tersedia saat restore/build. Kamu tidak perlu lagi menyiapkan folder `../RocketRadiationStorm/lib/` secara manual.
 
-## Masalah
+## ✅ Dependencies Wajib
 
-Workflow GitHub Actions gagal karena dependencies tidak ditemukan:
-- Rocket.Unturned DLLs (Rocket.API.dll, Rocket.Core.dll, Rocket.Unturned.dll)
-- Unity DLLs (UnityEngine.dll, UnityEngine.CoreModule.dll, Assembly-CSharp-firstpass.dll)
+| Komponen | Status | Cara Pemenuhan |
+| --- | --- | --- |
+| Rocket.API/Core/Unturned | ✅ Sudah dibundle di `Modules/Rocket.Unturned/` | Tidak perlu perubahan |
+| Assembly-CSharp.dll & kawan-kawan | ✅ Sudah dibundle di `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/` | Tidak perlu perubahan |
+| UnityEngine.* | ✅ Diambil otomatis lewat `PackageReference` ke `RocketModFix.UnityEngine.Redist` | Cukup jalankan restore/build |
 
-## Solusi
+## 🚀 Cara Build
 
-### Opsi 1: Include Dependencies di Repository (Recommended untuk Private Repo)
+```powershell
+# Restore package (opsional, MSBuild akan lakukan ketika /t:Restore dipanggil)
+.\nuget.exe restore CharmJoinMessage.csproj
 
-1. Copy dependencies ke struktur folder yang diharapkan:
-   ```
-   plugin/
-     RocketRadiationStorm/
-       Modules/
-         Rocket.Unturned/
-           Rocket.API.dll
-           Rocket.Core.dll
-           Rocket.Unturned.dll
-       lib/
-         Assembly-CSharp-firstpass.dll
-         UnityEngine.CoreModule.dll
-         UnityEngine.dll
-   ```
-
-2. Commit dependencies ke repository
-
-**Catatan**: File DLL besar, pertimbangkan menggunakan Git LFS atau alternatif lain.
-
-### Opsi 2: Download Dependencies di Workflow
-
-Workflow sudah mencoba download dependencies, tapi mungkin perlu disesuaikan dengan:
-- URL download yang benar
-- Authentication jika diperlukan
-- Version yang sesuai
-
-### Opsi 3: Gunakan NuGet Packages (Best Practice)
-
-Ubah `.csproj` untuk menggunakan NuGet packages:
-
-```xml
-<ItemGroup>
-  <PackageReference Include="Rocket.API" Version="5.5.0" />
-  <PackageReference Include="Rocket.Core" Version="5.5.0" />
-  <PackageReference Include="Rocket.Unturned" Version="5.5.0" />
-</ItemGroup>
+# Build (pastikan MSBuild atau dotnet SDK tersedia)
+"C:\Path\To\MSBuild.exe" CharmJoinMessage.csproj /t:Restore,Build /p:Configuration=Release
 ```
 
-**Catatan**: Rocket.Unturned mungkin tidak tersedia di NuGet public, perlu source alternatif.
-
-### Opsi 4: Setup Dependencies Cache
-
-Gunakan GitHub Actions cache untuk menyimpan dependencies:
-
-```yaml
-- name: Cache dependencies
-  uses: actions/cache@v3
-  with:
-    path: |
-      RocketRadiationStorm/Modules/Rocket.Unturned
-      RocketRadiationStorm/lib
-    key: ${{ runner.os }}-rocket-deps-${{ hashFiles('**/dependencies.lock') }}
+Atau jalankan script yang sudah ada:
+```powershell
+.\build.ps1
 ```
 
-### Opsi 5: Build Lokal Saja
+## ℹ️ Catatan
 
-Jika dependencies sulit di-setup di CI/CD, gunakan build lokal:
-- `build.bat` atau `build.ps1` untuk build lokal
-- Commit DLL hasil build ke repository (tidak ideal tapi praktis)
+- Jika build dijalankan di GitHub Actions atau CI lain, pastikan step restore dijalankan (`msbuild /t:Restore` atau `nuget restore`).
+- Package NuGet akan di-cache di folder global NuGet (`%USERPROFILE%\.nuget\packages`). Tidak perlu commit folder `packages/` ke repo.
+- Apabila ingin build offline, jalankan `nuget restore` sekali saat masih online, lalu copy cache ke environment offline.
 
-## Rekomendasi
+## 🔄 Migrasi dari Setup Lama
 
-Untuk development lokal: Gunakan struktur folder yang ada sekarang.
+Jika sebelumnya kamu menyalin manual `UnityEngine.dll` ke `../RocketRadiationStorm/lib/`, sekarang folder itu tidak lagi dipakai. Kamu bisa menghapusnya atau biarkan saja, tidak akan dipakai oleh project ini.
 
-Untuk CI/CD: 
-1. Jika repository private → Include dependencies di repo
-2. Jika repository public → Gunakan download di workflow atau build lokal
-3. Pertimbangkan menggunakan GitHub Packages atau Artifacts untuk menyimpan dependencies
+## 🧪 Testing
+
+Setelah build sukses, file output akan berada di `bin\Release\CharmJoinMessage.dll`. Copy ke folder plugin Rocket.Unturned seperti biasa.
+
+Selamat coding! 🎉
 

@@ -25,20 +25,8 @@
       <HintPath>RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>../RocketRadiationStorm/Rocket.Unturned-master/lib/Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="com.rlabrecque.steamworks.net">
       <HintPath>RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/com.rlabrecque.steamworks.net.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>../RocketRadiationStorm/lib/UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>../RocketRadiationStorm/lib/UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
@@ -46,6 +34,10 @@
   <ItemGroup>
     <Compile Include="CharmJoinMessagePlugin.cs" />
     <Compile Include="CharmJoinMessagePluginConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RocketModFix.UnityEngine.Redist" Version="2021.3.29.1" />
   </ItemGroup>
 </Project>
 
