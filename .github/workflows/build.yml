@@ -47,11 +47,8 @@ jobs:
         }
         
         # Use multi-line output format for GitHub Actions
-        $output = @"
-project_path=$projectPath
-project_dir=$projectDir
-"@
-        $output | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8
+        "project_path=$projectPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        "project_dir=$projectDir" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         
         Write-Host "Project path: $projectPath"
         Write-Host "Project dir: $projectDir"
@@ -66,8 +63,8 @@ project_dir=$projectDir
         $depsExist = $true
         $missingDeps = @()
         
-        # Check Rocket.Unturned DLLs
-        $rocketPath = Join-Path $projectDir "..\RocketRadiationStorm\Modules\Rocket.Unturned"
+        # Check Rocket.Unturned DLLs (in Modules folder inside CharmJoinMessage)
+        $rocketPath = Join-Path $projectDir "Modules\Rocket.Unturned"
         $rocketDlls = @("Rocket.API.dll", "Rocket.Core.dll", "Rocket.Unturned.dll")
         foreach ($dll in $rocketDlls) {
           $dllPath = Join-Path $rocketPath $dll
@@ -77,15 +74,22 @@ project_dir=$projectDir
           }
         }
         
-        # Check Unity DLLs
+        # Check Unity DLLs (in parent RocketRadiationStorm/lib)
         $libPath = Join-Path $projectDir "..\RocketRadiationStorm\lib"
-        $unityDlls = @("Assembly-CSharp-firstpass.dll", "UnityEngine.CoreModule.dll", "UnityEngine.dll")
+        $unityDlls = @("UnityEngine.CoreModule.dll", "UnityEngine.dll")
         foreach ($dll in $unityDlls) {
           $dllPath = Join-Path $libPath $dll
           if (-not (Test-Path $dllPath)) {
             $depsExist = $false
             $missingDeps += "Unity: $dll"
           }
+        }
+        
+        # Check Assembly-CSharp-firstpass (in Rocket.Unturned-master/lib)
+        $firstpassPath = Join-Path $projectDir "..\RocketRadiationStorm\Rocket.Unturned-master\lib\Assembly-CSharp-firstpass.dll"
+        if (-not (Test-Path $firstpassPath)) {
+          $depsExist = $false
+          $missingDeps += "Unity: Assembly-CSharp-firstpass.dll"
         }
         
         if (-not $depsExist) {
@@ -138,8 +142,9 @@ project_dir=$projectDir
             Write-Host "3. Incorrect HintPath in .csproj file" -ForegroundColor Yellow
             Write-Host ""
             Write-Host "To fix:" -ForegroundColor Yellow
-            Write-Host "- Ensure ../RocketRadiationStorm/Modules/Rocket.Unturned/ contains Rocket DLLs" -ForegroundColor Yellow
+            Write-Host "- Ensure Modules/Rocket.Unturned/ contains Rocket DLLs" -ForegroundColor Yellow
             Write-Host "- Ensure ../RocketRadiationStorm/lib/ contains Unity DLLs" -ForegroundColor Yellow
+            Write-Host "- Ensure ../RocketRadiationStorm/Rocket.Unturned-master/lib/ contains Assembly-CSharp-firstpass.dll" -ForegroundColor Yellow
             Write-Host "- Or update .csproj to use NuGet packages instead of local references" -ForegroundColor Yellow
             exit $exitCode
           }
