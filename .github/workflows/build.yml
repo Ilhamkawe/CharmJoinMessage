@@ -22,24 +22,79 @@ jobs:
     - name: Setup .NET Framework
       uses: microsoft/setup-msbuild@v1.1
       
+    - name: Find project file
+      id: find_project
+      shell: pwsh
+      run: |
+        $projectPath = $null
+        $projectDir = $null
+        
+        if (Test-Path "CharmJoinMessage\CharmJoinMessage.csproj") {
+          $projectPath = "CharmJoinMessage\CharmJoinMessage.csproj"
+          $projectDir = "CharmJoinMessage"
+          Write-Host "Found project in subdirectory: $projectPath"
+        } elseif (Test-Path "CharmJoinMessage.csproj") {
+          $projectPath = "CharmJoinMessage.csproj"
+          $projectDir = "."
+          Write-Host "Found project in root: $projectPath"
+        } else {
+          Write-Host "ERROR: Project file not found!"
+          Write-Host "Current directory contents:"
+          Get-ChildItem | Select-Object Name
+          exit 1
+        }
+        
+        Write-Host "project_path=$projectPath" >> $env:GITHUB_OUTPUT
+        Write-Host "project_dir=$projectDir" >> $env:GITHUB_OUTPUT
+      
     - name: Restore dependencies
-      run: nuget restore CharmJoinMessage/CharmJoinMessage.csproj
-      working-directory: ${{ github.workspace }}
+      shell: pwsh
+      run: nuget restore "${{ steps.find_project.outputs.project_path }}"
       continue-on-error: true
       
     - name: Build plugin
-      run: msbuild CharmJoinMessage/CharmJoinMessage.csproj /p:Configuration=Release /p:Platform="Any CPU" /t:Restore,Build /p:OutputPath=bin/Release/
-      working-directory: ${{ github.workspace }}
+      shell: pwsh
+      run: |
+        $projectPath = "${{ steps.find_project.outputs.project_path }}"
+        $projectDir = "${{ steps.find_project.outputs.project_dir }}"
+        
+        Write-Host "Building project: $projectPath"
+        Write-Host "Working directory: $projectDir"
+        
+        Push-Location $projectDir
+        try {
+          msbuild "$projectPath" /p:Configuration=Release /p:Platform="Any CPU" /t:Restore,Build /p:OutputPath=bin\Release\ /v:minimal /nologo
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+        } finally {
+          Pop-Location
+        }
       
     - name: Create output directory
+      shell: pwsh
       run: |
-        if not exist "build-output" mkdir build-output
-        if not exist "build-output\CharmJoinMessage" mkdir build-output\CharmJoinMessage
+        if (-not (Test-Path "build-output")) { New-Item -ItemType Directory -Path "build-output" | Out-Null }
+        if (-not (Test-Path "build-output\CharmJoinMessage")) { New-Item -ItemType Directory -Path "build-output\CharmJoinMessage" | Out-Null }
       
     - name: Copy DLL to output
+      shell: pwsh
       run: |
-        copy CharmJoinMessage\bin\Release\CharmJoinMessage.dll build-output\CharmJoinMessage\CharmJoinMessage.dll
-        if exist CharmJoinMessage\bin\Release\CharmJoinMessage.pdb copy CharmJoinMessage\bin\Release\CharmJoinMessage.pdb build-output\CharmJoinMessage\CharmJoinMessage.pdb
+        $projectDir = "${{ steps.find_project.outputs.project_dir }}"
+        $dllPath = Join-Path $projectDir "bin\Release\CharmJoinMessage.dll"
+        $pdbPath = Join-Path $projectDir "bin\Release\CharmJoinMessage.pdb"
+        
+        if (Test-Path $dllPath) {
+          Copy-Item $dllPath "build-output\CharmJoinMessage\CharmJoinMessage.dll" -Force
+          Write-Host "DLL copied successfully"
+        } else {
+          Write-Host "ERROR: DLL not found at $dllPath"
+          exit 1
+        }
+        
+        if (Test-Path $pdbPath) {
+          Copy-Item $pdbPath "build-output\CharmJoinMessage\CharmJoinMessage.pdb" -Force
+        }
       
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -47,4 +102,3 @@ jobs:
         name: CharmJoinMessage-Plugin
         path: build-output/CharmJoinMessage/*.dll
         retention-days: 30
-
