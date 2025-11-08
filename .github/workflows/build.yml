@@ -1,0 +1,50 @@
+name: Build CharmJoinMessage Plugin
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'CharmJoinMessage/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'CharmJoinMessage/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET Framework
+      uses: microsoft/setup-msbuild@v1.1
+      
+    - name: Restore dependencies
+      run: nuget restore CharmJoinMessage/CharmJoinMessage.csproj
+      working-directory: ${{ github.workspace }}
+      continue-on-error: true
+      
+    - name: Build plugin
+      run: msbuild CharmJoinMessage/CharmJoinMessage.csproj /p:Configuration=Release /p:Platform="Any CPU" /t:Restore,Build /p:OutputPath=bin/Release/
+      working-directory: ${{ github.workspace }}
+      
+    - name: Create output directory
+      run: |
+        if not exist "build-output" mkdir build-output
+        if not exist "build-output\CharmJoinMessage" mkdir build-output\CharmJoinMessage
+      
+    - name: Copy DLL to output
+      run: |
+        copy CharmJoinMessage\bin\Release\CharmJoinMessage.dll build-output\CharmJoinMessage\CharmJoinMessage.dll
+        if exist CharmJoinMessage\bin\Release\CharmJoinMessage.pdb copy CharmJoinMessage\bin\Release\CharmJoinMessage.pdb build-output\CharmJoinMessage\CharmJoinMessage.pdb
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: CharmJoinMessage-Plugin
+        path: build-output/CharmJoinMessage/*.dll
+        retention-days: 30
+
