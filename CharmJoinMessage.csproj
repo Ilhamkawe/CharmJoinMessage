@@ -39,5 +39,16 @@
   <ItemGroup>
     <PackageReference Include="RocketModFix.UnityEngine.Redist" Version="2021.3.29.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>$(NuGetPackageRoot)rocketmodfix.unityengine.redist\2021.3.29.1\lib\net40\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(NuGetPackageRoot)rocketmodfix.unityengine.redist\2021.3.29.1\lib\net40\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
 </Project>
 
