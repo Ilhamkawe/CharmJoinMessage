@@ -8,7 +8,7 @@ Sejak commit ini, project sudah memakai NuGet package `RocketModFix.UnityEngine.
 | Komponen | Status | Cara Pemenuhan |
 | --- | --- | --- |
 | Rocket.API/Core/Unturned | ✅ Sudah dibundle di `Modules/Rocket.Unturned/` | Tidak perlu perubahan |
-| Assembly-CSharp.dll & kawan-kawan | ✅ Sudah dibundle di `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/` | Tidak perlu perubahan |
+| Assembly-CSharp.dll & kawan-kawan | ✅ Sudah dibundle di `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/` (termasuk `Assembly-CSharp-firstpass.dll`) | Tidak perlu perubahan |
 | UnityEngine.* | ✅ Diambil otomatis lewat `PackageReference` ke `RocketModFix.UnityEngine.Redist` | Cukup jalankan restore/build |
 
 ## 🚀 Cara Build

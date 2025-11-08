@@ -3,13 +3,8 @@
 ## ✅ Sudah Siap
 
 - `Modules/Rocket.Unturned/` → berisi `Rocket.API/Core/Unturned.dll`
-- `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/` → berisi `Assembly-CSharp.dll`, `com.rlabrecque.steamworks.net.dll`, dll
+- `RocketModFix.Unturned.Redist.Server.3.25.9.2/lib/net48/` → berisi `Assembly-CSharp.dll`, `Assembly-CSharp-firstpass.dll`, `com.rlabrecque.steamworks.net.dll`, dll
 - `UnityEngine.*` → otomatis disediakan lewat NuGet package `RocketModFix.UnityEngine.Redist`
-
-## ❌ Tidak Lagi Diperlukan
-
-- Folder `../RocketRadiationStorm/lib/` dengan `UnityEngine.dll`
-- File manual `Assembly-CSharp-firstpass.dll` di luar project
 
 ## ✅ Langkah Build
 

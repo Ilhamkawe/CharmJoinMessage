@@ -1,12 +1,12 @@
 using System;
 using Rocket.API.Collections;
-using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace CharmJoinMessage
 {
@@ -17,13 +17,13 @@ namespace CharmJoinMessage
         protected override void Load()
         {
             Instance = this;
-            PlayerEvents.OnPlayerConnected += OnPlayerConnected;
+            UnturnedPlayerEvents.OnPlayerConnected += OnPlayerConnected;
             Logger.Log("[CharmJoinMessage] Plugin loaded successfully!");
         }
 
         protected override void Unload()
         {
-            PlayerEvents.OnPlayerConnected -= OnPlayerConnected;
+            UnturnedPlayerEvents.OnPlayerConnected -= OnPlayerConnected;
             Logger.Log("[CharmJoinMessage] Plugin unloaded.");
             Instance = null;
         }
